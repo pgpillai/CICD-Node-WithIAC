@@ -48,7 +48,9 @@ jobs:
           name: Build front-end
           command: |
             # Your code here
-            exit 1
+            cd frontend
+            npm i
+            npm run build
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -64,7 +66,9 @@ jobs:
           name: Back-end build
           command: |
              # Your code here
-             exit 1
+             cd backend
+             npm i
+             npm run build
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
@@ -78,6 +82,14 @@ jobs:
       # Checkout code from git
       # Restore from cache
       # Your job code here
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Test Frontend
+          command: |
+            cd frontend
+            npm i
+            npm run test
                 
   test-backend:
     docker:
@@ -88,6 +100,14 @@ jobs:
       # Checkout code from git
       # Restore from cache
       # Your job code here
+      - restore_cache:
+          keys: [backend-build]
+      -run:
+         name: Test Backend
+         command: |
+            cd backend
+            npm i
+            npm run test
             
   scan-frontend:
     docker:
@@ -111,10 +131,11 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
       # Docker image here that supports AWS CLI
     steps:
       # Checkout code from git
+      - checkout
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -152,6 +173,7 @@ jobs:
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace
+      - checkout
       - run:
           name: Install dependencies
           command: |
@@ -184,7 +206,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
       # Docker image here that supports AWS CLI
     steps:
       # Checkout code from git
