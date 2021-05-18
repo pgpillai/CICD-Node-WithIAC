@@ -102,9 +102,9 @@ jobs:
       # Your job code here
       - restore_cache:
           keys: [backend-build]
-      -run:
-         name: Test Backend
-         command: |
+      - run:
+          name: Test Backend
+          command: |
             cd backend
             npm i
             npm run test
@@ -210,6 +210,8 @@ jobs:
       # Docker image here that supports AWS CLI
     steps:
       # Checkout code from git
+      - checkout
+          
       - run:
           name: Install dependencies
           command: |
@@ -231,6 +233,8 @@ jobs:
       - image: circleci/node:13.8.0
       # Docker image here that supports Ansible
     steps:
+      - checkout
+          
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace
@@ -250,6 +254,7 @@ jobs:
       # Lightweight Docker image 
     steps:
       # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
