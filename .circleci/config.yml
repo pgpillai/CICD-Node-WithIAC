@@ -164,8 +164,9 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udacicd \
-              --stack-name "udacicd-backend-{CIRCLE_WORKFLOW_ID}" \
+              --stack-name "udacicd-backend-${CIRCLE_WORKFLOW_ID}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
+            echo "${CIRCLE_WORKFLOW_ID}"
               exit 1
       - run:
           name: Ensure front-end infrastructure exist
@@ -173,7 +174,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=udacicd \
-              --stack-name "udacicd-frontend-{CIRCLE_WORKFLOW_ID}" \
+              --stack-name "udacicd-frontend-${CIRCLE_WORKFLOW_ID}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
               exit 1
       - run:
@@ -182,7 +183,9 @@ jobs:
             # Your code here
             aws ec2 describe-instances --filters Name=tag:Name,Values=udacicd-backend-${CIRCLE_WORKFLOW_ID} \
             --query "Reservations[*].Instances[*].PublicIpAddress" \
-            --output text >> project/.circleci/ansible/inventory.txt
+            --output text > /tmp/backendip
+            echo cat backendip
+            echo cat backendip >> project/.circleci/ansible/inventory.txt
             exit 1
       - persist_to_workspace:
           root: ~/
