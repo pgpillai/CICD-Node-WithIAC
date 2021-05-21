@@ -220,13 +220,13 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
-            #echo "$(ls .)"
             echo "$(cat .circleci/ansible/inventory.txt)"
             
-            exit 1
+          
       - run:
           name: Configure server
           command: |
+            cd .circleci/ansible/
             ansible-playbook -i inventory.txt configure-server.yml
             exit 1
       # Here's where you will add some code to rollback on failure      
