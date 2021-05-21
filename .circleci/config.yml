@@ -193,7 +193,7 @@ jobs:
             echo "$(cat .circleci/ansible/inventory.txt)"
             # exit 1
       - persist_to_workspace:
-          root: .
+          root: /root/project/
           paths:
             - .circleci/ansible/inventory.txt
       
