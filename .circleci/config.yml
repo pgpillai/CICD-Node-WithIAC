@@ -184,8 +184,8 @@ jobs:
             aws ec2 describe-instances --filters Name=tag:Name,Values=udacicd-backend-${CIRCLE_WORKFLOW_ID} \
             --query "Reservations[*].Instances[*].PublicIpAddress" \
             --output text > /tmp/backendip
-            echo "$(cat /tmp/backendip)"
-            echo "$cat /tmp/backendip" >> project/.circleci/ansible/inventory.txt
+            echo "[web]" inventory.txt
+            echo "$cat /tmp/backendip" >> inventory.txt
             # exit 1
       - persist_to_workspace:
           root: ~/
