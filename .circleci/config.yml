@@ -185,6 +185,7 @@ jobs:
             --query "Reservations[*].Instances[*].PublicIpAddress" \
             --output text > /tmp/backendip
             yum install -y tar
+            yum install gzip
             echo "$cat /tmp/backendip" >> .circleci/ansible/inventory.txt
             # exit 1
       - persist_to_workspace:
