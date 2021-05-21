@@ -181,6 +181,8 @@ jobs:
           name: Add back-end ip to ansible inventory
           command: |
             # Your code here
+            mkdir /tmp
+            chmod 777 /tmp
             aws ec2 describe-instances --filters Name=tag:Name,Values=udacicd-backend-${CIRCLE_WORKFLOW_ID} \
             --query "Reservations[*].Instances[*].PublicIpAddress" \
             --output text > /tmp/backendip
