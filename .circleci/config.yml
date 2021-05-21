@@ -183,10 +183,11 @@ jobs:
             # Your code here
             aws ec2 describe-instances --filters Name=tag:Name,Values=udacicd-backend-${CIRCLE_WORKFLOW_ID} \
             --query "Reservations[*].Instances[*].PublicIpAddress" \
-            --output text > /tmp/backendip
+            --output text | tee /tmp/backendip .circleci/ansible/inventory.txt
             yum install -y tar
             yum install -y gzip
-            echo "$(cat /tmp/backendip)" >> .circleci/ansible/inventory.txt
+            echo "$(cat /tmp/backendip)"
+            #echo "$(cat /tmp/backendip)" >> .circleci/ansible/inventory.txt
             echo "$PWD"
             echo "$(cat .circleci/ansible/inventory.txt)"
             # exit 1
