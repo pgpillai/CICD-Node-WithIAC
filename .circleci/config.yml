@@ -189,7 +189,7 @@ jobs:
             echo "$cat /tmp/backendip" >> .circleci/ansible/inventory.txt
             # exit 1
       - persist_to_workspace:
-          root: ~/
+          root: .
           paths:
             - .circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure    
