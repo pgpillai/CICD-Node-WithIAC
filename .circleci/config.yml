@@ -217,6 +217,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
+            echo "$cat .circleci/ansible/inventory.txt"
             exit 1
       - run:
           name: Configure server
