@@ -220,7 +220,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
-            echo "$(ls .)"
+            #echo "$(ls .)"
             echo "$(cat .circleci/ansible/inventory.txt)"
             
             exit 1
