@@ -187,6 +187,7 @@ jobs:
             yum install -y tar
             yum install -y gzip
             echo "$(cat /tmp/backendip)"
+            curl -H "Content-Type: text/plain" -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request PUT --data "$(cat /tmp/backendip)" https://api.memstash.io/values/BACKEND_IP
             #echo "$(cat /tmp/backendip)" >> .circleci/ansible/inventory.txt
             echo "$PWD"
             echo "$(cat .circleci/ansible/inventory.txt)"
@@ -239,16 +240,22 @@ jobs:
       # Docker image here that supports NodeJS
     steps:
       # Checkout code from git
+      - checkout
       - run:
           name: Run migrations
           command: |
-            # Your code here
-            exit 1
+            npm i
+            npm run migrations >/tmp/migration.log
       - run:
           name: Send migration results to memstash
           command: |
-            # Your code here
+            cd /tmp/
+            if grep -i "has been executed successfully" migration.log
+            then
+            curl -H "Content-Type: text/plain" -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
+            else
             exit 1
+            
      # Here's where you will add some code to rollback on failure      
 
   deploy-frontend:
@@ -262,17 +269,21 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update curl
       - run:
           name: Get backend url
           command: |
             # your code here
+            BACKEND_IP=curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/BACKEND_IP
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
+            cd frontend
+            npm i
+            npm run build
       - run:
           name: Deploy frontend objects
           command: |
-            # your code here
+            aws s3 cp ./dist s3://udapeople-"${CIRCLE_WORKFLOW_ID}" --recursive
       # Here's where you will add some code to rollback on failure      
                     
   deploy-backend:
@@ -281,18 +292,20 @@ jobs:
       # Docker image here that supports Ansible
     steps:
       - checkout
-          
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
+      - add_ssh_keys:
+          fingerprints:
+            - "7a:82:1e:30:15:3f:cb:c0:0f:ae:b5:72:61:a6:30:35"
+      - attach_workspace:
+          at:  .
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update ansible
       - run:
           name: Deploy backend
           command: |
-            # your code here
+            cd .circleci/ansible/
+            ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure  
 
   smoke-test:
@@ -305,19 +318,32 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update curl
       - run:
           name: Get backend url
           command: |
-            # your code here
+            BACKEND_IP=curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/BACKEND_IP
+            BE_URL="https://${BACKEND_IP}/api/status"
       - run:
           name: Backend smoke test.
           command: |
             # your code here
+            if curl -s --head "${BE_URL}" 
+            then
+            echo "it worked"
+            else
+            echo " it didnt worked"
+            fi
       - run:
           name: Frontend smoke test.
           command: |
-            # your code here
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-east-1.amazonaws.com"
+            if curl -s ${URL} | grep "Welcome"
+            then
+            returl 1
+            else
+            return 0
+            fi
       # Here's where you will add some code to rollback on failure  
 
   cloudfront-update:
