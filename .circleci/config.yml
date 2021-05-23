@@ -29,12 +29,13 @@ commands:
           # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+            SUCCESS = curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/migration_"${CIRCLE_WORKFLOW_ID}"
             if(( $SUCCESS==1 )); 
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
+              cd ~/project/backend
+              npm install
+              Add revert code here. You can find this in the Getting Started section.
+              npm migrations:revert
               exit 1
             fi
             
@@ -221,7 +222,9 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
+            pip install awscli
             echo "$(cat .circleci/ansible/inventory.txt)"
+            
             
           
       - run:
@@ -269,7 +272,12 @@ jobs:
               exit 1
             fi
             
-     # Here's where you will add some code to rollback on failure      
+     # Here's where you will add some code to rollback on failure   
+    - revert-migrations:   
+        workflow_id: "${CIRCLE_WORKFLOW_ID}"
+    - destroy-environment:
+        workflow_id: "${CIRCLE_WORKFLOW_ID}"
+
 
   deploy-frontend:
     docker:
@@ -299,7 +307,11 @@ jobs:
             npm i
             npm run build
             aws s3 cp ./dist s3://udapeople-"${CIRCLE_WORKFLOW_ID}"/ --recursive
-      # Here's where you will add some code to rollback on failure      
+      # Here's where you will add some code to rollback on failure  
+      - revert-migrations:   
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"    
                     
   deploy-backend:
     docker:
@@ -323,7 +335,10 @@ jobs:
             cd .circleci/ansible/
             ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure  
-
+      - revert-migrations:   
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
   smoke-test:
     docker:
       - image: circleci/node:13.8.0
@@ -347,9 +362,10 @@ jobs:
             # your code here
             if curl -s --head "${BE_URL}" 
             then
-            echo "it worked"
+              echo "it worked"
             else
-            echo " it didnt worked"
+              echo " it didnt worked"
+              return 1
             fi
       - run:
           name: Frontend smoke test.
@@ -357,11 +373,15 @@ jobs:
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-east-1.amazonaws.com"
             if curl -s ${URL} | grep "Welcome"
             then
-            returl 1
+              returl 0
             else
-            return 0
+              return 1
             fi
       # Here's where you will add some code to rollback on failure  
+      - revert-migrations:   
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
 
   cloudfront-update:
     docker:
