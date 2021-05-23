@@ -15,7 +15,7 @@ commands:
             # aws s3 rm s3://udacicd-<< parameters.workflow_id >> --recursive
             aws cloudformation delete-stack --stack-name udacicd-frontend-<< parameters.workflow_id >>
             aws cloudformation delete-stack --stack-name udacicd-backend-<< parameters.workflow_id >>
-            exit 1
+            #exit 1
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -30,14 +30,15 @@ commands:
           when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS =$('curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/migration_"${CIRCLE_WORKFLOW_ID}"')
+            echo '$(curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/migration_"${CIRCLE_WORKFLOW_ID}")'
+            SUCCESS=1
             if(( "${SUCCESS}" ==1 )); 
             then
               cd ~/project/backend
               npm install
               Add revert code here. You can find this in the Getting Started section.
               npm migrations:revert
-              exit 1
+              #exit 1
             fi
             
 jobs:
