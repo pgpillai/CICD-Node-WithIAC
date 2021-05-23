@@ -273,10 +273,10 @@ jobs:
             fi
             
      # Here's where you will add some code to rollback on failure   
-    - revert-migrations:   
-        workflow_id: "${CIRCLE_WORKFLOW_ID}"
-    - destroy-environment:
-        workflow_id: "${CIRCLE_WORKFLOW_ID}"
+      - revert-migrations:   
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
 
 
   deploy-frontend:
