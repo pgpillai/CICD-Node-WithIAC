@@ -289,18 +289,20 @@ jobs:
             BACKEND_IP=curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/BACKEND_IP
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
-            cd frontend
-            npm i
-            npm run build
+            echo "${API_URL}" >> "frontend/.env"
+            
       - run:
           name: Deploy frontend objects
           command: |
-            aws s3 cp ./dist s3://udapeople-"${CIRCLE_WORKFLOW_ID}" --recursive
+            cd frontend
+            npm i
+            npm run build
+            aws s3 cp ./dist s3://udapeople-"${CIRCLE_WORKFLOW_ID}"/ --recursive
       # Here's where you will add some code to rollback on failure      
                     
   deploy-backend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: python:3.7-alpine3.12
       # Docker image here that supports Ansible
     steps:
       - checkout
@@ -313,6 +315,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
+            pip install awscli
       - run:
           name: Deploy backend
           command: |
@@ -336,6 +339,7 @@ jobs:
           command: |
             BACKEND_IP=curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/BACKEND_IP
             BE_URL="https://${BACKEND_IP}/api/status"
+            echo "${BE_URL}"
       - run:
           name: Backend smoke test.
           command: |
@@ -360,10 +364,11 @@ jobs:
 
   cloudfront-update:
     docker:
-      - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
       # Docker image here that supports AWS CLI
     steps:
       # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
