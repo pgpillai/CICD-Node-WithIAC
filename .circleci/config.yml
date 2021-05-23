@@ -294,7 +294,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/node:latest
       # Docker image here that supports AWS CLI
     steps:
       # Checkout code from git
@@ -303,9 +303,10 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum -y install tar gzip
-            curl -sL https://deb.nodesource.com/setup_12.x | bash -
-            yum -y install nodejs
+            apk add --no-cache curl
+            apk add --no-cache --upgrade bash
+            apk add --no-cache --update npm
+            pip3 install awscli
             
       - run:
           name: Get backend url
@@ -321,7 +322,7 @@ jobs:
           command: |
             cd project/frontend
             npm i
-            npm install webpack webpack-dev-server --save-dev
+            #npm install webpack webpack-dev-server --save-dev
             npm run build
             aws s3 cp ./dist s3://udapeople-"${CIRCLE_WORKFLOW_ID}"/ --recursive
       # Here's where you will add some code to rollback on failure  
