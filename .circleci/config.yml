@@ -303,11 +303,10 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt-get install sudo -y
-            sudo apt-get update
-            sudo apt install curl
-            curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-            sudo apt install nodejs
+            yum install curl
+            curl -sL https://deb.nodesource.com/setup_12.x | bash -
+            yum install nodejs
+            npm install webpack webpack-dev-server --save-dev
       - run:
           name: Get backend url
           command: |
@@ -320,15 +319,15 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            cd frontend
+            cd project/frontend
             npm i
             npm run build
             aws s3 cp ./dist s3://udapeople-"${CIRCLE_WORKFLOW_ID}"/ --recursive
       # Here's where you will add some code to rollback on failure  
-      - revert-migrations:   
-          workflow_id: "${CIRCLE_WORKFLOW_ID}"
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID}"    
+      #- revert-migrations:   
+          #workflow_id: "${CIRCLE_WORKFLOW_ID}"
+      #- destroy-environment:
+          #workflow_id: "${CIRCLE_WORKFLOW_ID}"    
                     
   deploy-backend:
     docker:
@@ -351,7 +350,7 @@ jobs:
           name: Deploy backend
           command: |
             cd .circleci/ansible/
-            echo "$cat inventory.txt"
+            echo "$(cat inventory.txt)"
             ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure  
       - revert-migrations:   
