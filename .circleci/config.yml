@@ -303,10 +303,10 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum install curl
+            yum -y install tar gzip
             curl -sL https://deb.nodesource.com/setup_12.x | bash -
-            yum install nodejs
-            npm install webpack webpack-dev-server --save-dev
+            yum -y install nodejs
+            
       - run:
           name: Get backend url
           command: |
@@ -321,6 +321,7 @@ jobs:
           command: |
             cd project/frontend
             npm i
+            npm install webpack webpack-dev-server --save-dev
             npm run build
             aws s3 cp ./dist s3://udapeople-"${CIRCLE_WORKFLOW_ID}"/ --recursive
       # Here's where you will add some code to rollback on failure  
