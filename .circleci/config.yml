@@ -30,7 +30,7 @@ commands:
           when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            echo '$(curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/migration_"${CIRCLE_WORKFLOW_ID}")'
+            echo $(curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/migration_"${CIRCLE_WORKFLOW_ID}")
             SUCCESS=1
             if(( "${SUCCESS}" ==1 )); 
             then
@@ -458,7 +458,7 @@ workflows:
           #requires: [build-frontend]
       - deploy-infrastructure:
           #requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          equires: [build-frontend, build-backend]
+          requires: [build-frontend, build-backend]
           filters:
             branches:
               #only: [test-feature-branch]
