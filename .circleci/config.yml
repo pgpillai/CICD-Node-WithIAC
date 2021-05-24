@@ -390,6 +390,7 @@ jobs:
           name: Backend smoke test.
           command: |
             # your code here
+            echo "back end url is ${BE_URL}"
             if curl -s "${BE_URL}" | grep "ok";
             then
               echo "it worked";
