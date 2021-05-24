@@ -37,7 +37,7 @@ commands:
             
             SUCCESS=$(curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/migration_"${CIRCLE_WORKFLOW_ID}")
             echo "${SUCCESS}"
-            SUCCESS = 1
+            SUCCESS= "1"
             if(( "${SUCCESS}" ==1 )); 
             then
               cd ~/project/backend
@@ -463,7 +463,7 @@ jobs:
             name: Get old stack workflow id
             command: |
               # your code here
-              export OldWorkflowID=curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET  https://api.memstash.io/values/OldWorkflowID_"${CIRCLE_WORKFLOW_ID}"
+              export OldWorkflowID=$(curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET  https://api.memstash.io/values/OldWorkflowID_"${CIRCLE_WORKFLOW_ID}")
               export STACKS=($aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
               echo Old Workflow Id: "${OldWorkflowID}"
