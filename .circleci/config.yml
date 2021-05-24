@@ -321,7 +321,7 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            cd project/frontend
+            cd frontend
             npm i
             #npm install webpack webpack-dev-server --save-dev
             npm run build

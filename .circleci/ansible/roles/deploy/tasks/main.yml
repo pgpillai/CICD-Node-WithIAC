@@ -11,12 +11,14 @@
   shell: |
     cd /home/ubuntu/backend
     npm install
-    npm install --only=dev
+    
 - name: Build package
   shell: |
     cd /home/ubuntu/backend
     npm run build
-    cat .env
+    printenv |grep TYPEORM >.env
+    echo ENVIRONMENT=production >>.env
+    echo "$(cat .env)"
     npm run prestart:prod
 - name: Start PM2
   shell: |
