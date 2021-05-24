@@ -12,7 +12,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            if (aws s3api head-bucket --bucket udacicd-<< parameters.workflow_id)
+            if (aws s3api head-bucket --bucket udacicd-<< parameters.workflow_id >>)
             then
               aws s3 rm s3://udacicd-<< parameters.workflow_id >> --recursive
             fi
