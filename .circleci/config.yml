@@ -392,7 +392,9 @@ jobs:
           name: Backend smoke test.
           command: |
             # your code here
-            echo "back end url is ${BE_URL}"
+            BACKEND_IP=$(curl -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request GET https://api.memstash.io/values/BACKEND_IP)
+            export BE_URL="http://${BACKEND_IP}:3030/api/status"
+            echo "backend URL: ${BE_URL}"
             if curl -s "${BE_URL}" | grep "ok";
             then
               echo "it worked";
@@ -413,10 +415,10 @@ jobs:
               exit 1;
             fi
       # Here's where you will add some code to rollback on failure  
-      #- revert-migrations:   
-          #workflow_id: "${CIRCLE_WORKFLOW_ID}"
-      #- destroy-environment:
-          #workflow_id: "${CIRCLE_WORKFLOW_ID}"
+      - revert-migrations:   
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
 
   cloudfront-update:
     docker:
