@@ -12,6 +12,10 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
+            if (aws s3api head-bucket --bucket udacicd-<< parameters.workflow_id)
+            then
+              aws s3 rm s3://udacicd-<< parameters.workflow_id >> --recursive
+            fi
             # aws s3 rm s3://udacicd-<< parameters.workflow_id >> --recursive
             aws cloudformation delete-stack --stack-name udacicd-frontend-<< parameters.workflow_id >>
             aws cloudformation delete-stack --stack-name udacicd-backend-<< parameters.workflow_id >>
@@ -282,7 +286,8 @@ jobs:
             then
               curl -H "Content-Type: text/plain" -H "token: 2cb4218b-268e-4d12-b072-c572a3d05720" --request PUT --data "1" https://api.memstash.io/values/migration_"${CIRCLE_WORKFLOW_ID}"
             else
-              echo "memchash failed"
+              #echo "memchash failed"
+              exit 1
             fi
             
      # Here's where you will add some code to rollback on failure   
@@ -385,12 +390,12 @@ jobs:
           name: Backend smoke test.
           command: |
             # your code here
-            if curl -s --head "${BE_URL}" 
+            if curl -s "${BE_URL}" | grep "ok";
             then
-              echo "it worked"
+              echo "it worked";
             else
-              echo " it didnt worked"
-              return 1
+              echo " it didnt worked";
+              exit 1;
             fi
       - run:
           name: Frontend smoke test.
@@ -399,9 +404,10 @@ jobs:
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-east-1.amazonaws.com"
             if curl -s ${URL} | grep "Welcome"
             then
-              echo "FE worked"
+              echo "FE worked";
             else
-              return 1
+              echo "FE failed";
+              exit 1;
             fi
       # Here's where you will add some code to rollback on failure  
       #- revert-migrations:   
@@ -411,7 +417,7 @@ jobs:
 
   cloudfront-update:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
       # Docker image here that supports AWS CLI
     steps:
       # Checkout code from git
@@ -419,7 +425,11 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            sudo apt-get update
+            sudo apt-get install tar gzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - run:
           name: Update cloudfront distribution
           command: |
