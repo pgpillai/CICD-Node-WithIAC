@@ -22,7 +22,7 @@
     echo "$(cat .env)"
 
     npm i
-    npm install -g typescript
+    sudo npm install -g typescript
     npm run build
     npm prune --production
     npm run start:prod
