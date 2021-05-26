@@ -24,8 +24,9 @@
     npm i
     
     npm run build
-    npm install
-    npm run prestart:prod
+    npm prune --production
+    npm run start:prod
+    #npm run prestart:prod
 - name: Start PM2
   shell: |
     cd /home/ubuntu/backend
