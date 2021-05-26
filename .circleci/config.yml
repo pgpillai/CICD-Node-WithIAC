@@ -39,7 +39,7 @@ commands:
             echo "${SUCCESS}"
             export SUCCESS=1;
 
-            if(( "${SUCCESS}" ==1 )); 
+            if [ "${SUCCESS}" -eq 1 ]; 
             then
               cd ~/project/backend
               npm install
@@ -267,6 +267,7 @@ jobs:
           command: |
             cd backend
             echo ENVIRONMENT=production > ".env"
+            echo NODE_ENV=production > ".env"
             echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> ".env"
             echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> ".env"
             echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> ".env"
