@@ -21,6 +21,7 @@
     echo NODE_ENV=production >>.env
     echo "$(cat .env)"
     npm i
+    npm install typescript -g
     npm run build
     npm run prestart:prod
 - name: Start PM2
