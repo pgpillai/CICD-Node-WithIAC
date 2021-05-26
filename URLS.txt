@@ -1,13 +1,12 @@
 GitHub repository [URL01]: https://github.com/pgpillai/CICD-Node-WithIAC.git
 
 
-S3 Bucket [URL02]: http://udapeople-.s3-website-us-east-1.amazonaws.com/
+S3 Bucket [URL02]: http://udapeople-7a01efc9-9ceb-40ba-84fb-73c26d12a519.s3-website-us-east-1.amazonaws.com
+
+CloudFront URL [URL03]: http://d1cbd8idcp4xdx.cloudfront.net/
 
 
-CloudFront URL [URL03]: http://d344sgyexx1nsl.cloudfront.net/
-
-
-back-end URL [URL04]: http://:3030/api/status
+back-end URL [URL04]: http://ec2-34-204-17-75.compute-1.amazonaws.com:3030/api/status
 
 
 URL for Prometheus Server [URL05]: http://ec2-18-234-216-162.compute-1.amazonaws.com:9090/targets
