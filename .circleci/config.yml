@@ -371,8 +371,8 @@ jobs:
       # Here's where you will add some code to rollback on failure  
       - revert-migrations:   
           workflow_id: "${CIRCLE_WORKFLOW_ID}"
-      #- destroy-environment:
-          #workflow_id: "${CIRCLE_WORKFLOW_ID}"
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
   smoke-test:
     docker:
       - image: circleci/node:13.8.0
