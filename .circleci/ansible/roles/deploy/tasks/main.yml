@@ -24,9 +24,9 @@
     npm i
     sudo npm install -g typescript
     npm run build
-    npm prune --production
-    npm run start:prod
-    #npm run prestart:prod
+    #npm prune --production
+    #npm run start:prod
+    npm run prestart:prod
 - name: Start PM2
   shell: |
     cd /home/ubuntu/backend
