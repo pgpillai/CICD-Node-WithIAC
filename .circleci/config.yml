@@ -368,11 +368,11 @@ jobs:
             cd .circleci/ansible/
             echo "$(cat inventory.txt)"
             ansible-playbook -i inventory.txt deploy-backend.yml
-      # Here's where you will add some code to rollback on failure  
-      #- revert-migrations:   
-          #workflow_id: "${CIRCLE_WORKFLOW_ID}"
-      #- destroy-environment:
-          #workflow_id: "${CIRCLE_WORKFLOW_ID}"
+       Here's where you will add some code to rollback on failure  
+      - revert-migrations:   
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
   smoke-test:
     docker:
       - image: circleci/node:13.8.0
@@ -408,7 +408,7 @@ jobs:
               echo "it worked";
             else
               echo " it didnt worked";
-              #exit 1;
+              exit 1;
             fi
       - run:
           name: Frontend smoke test.
@@ -420,7 +420,7 @@ jobs:
               echo "FE worked";
             else
               echo "FE failed";
-              #exit 1;
+              exit 1;
             fi
       # Here's where you will add some code to rollback on failure  
       - revert-migrations:   
